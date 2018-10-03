@@ -116,12 +116,13 @@ bool sendAtmosphereData()
 {
     HTTPClient http;
     String payload;
-    DynamicJsonBuffer jsonBuffer(JSON_OBJECT_SIZE(2));
+    DynamicJsonBuffer jsonBuffer(JSON_OBJECT_SIZE(3));
 
     // Build JSON payload
     JsonObject &root = jsonBuffer.createObject();
     root["temperature"] = temperature;
     root["humidity"] = humidity;
+    root["heatIndex"] = heatIndex;
 
     root.printTo(payload);
 
