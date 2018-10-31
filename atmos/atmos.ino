@@ -17,6 +17,7 @@ Adafruit_SSD1306 display(OLED_RESET);
 // Constants
 const char* ssid = "";
 const char* password = "";
+const int sleepTimeS = 600;
 
 // Global declarations
 float humidity;
@@ -28,6 +29,11 @@ void setup()
 {
     Serial.begin(115200);
 
+    // Disable WiFi at startup to save battery
+    WiFi.mode( WIFI_OFF );
+    WiFi.forceSleepBegin();
+    delay(1);
+
     // Start DTH sensor
     dht.begin();
 
@@ -37,27 +43,6 @@ void setup()
     display.setTextColor(WHITE);
     display.display();
     display.clearDisplay();
-    
-    // Start, configurare and connect to WiFi
-    WiFi.begin(ssid, password);
-
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(500);
-        drawCenterText("Connecting...");
-    }
-
-    // Verbonden.
-    drawCenterText("Connected!");
-    Serial.println("Connected!");
-
-    // Access Point (SSID).
-    Serial.print("SSID: ");
-    Serial.println(WiFi.SSID());
-
-    // IP adres.
-    Serial.print("IP: ");
-    Serial.println(WiFi.localIP());
 }
 
 void loop()
@@ -74,8 +59,9 @@ void loop()
     sendAtmosphereData();
 
     faildReads = 0;
-    // Wait a few seconds between measurements.
-    delay(5000);
+
+    // Turn the ESP into sleep mode
+    ESP.deepSleep(sleepTimeS * 1000000, WAKE_RF_DISABLED);
 }
 
 bool readAtmospherData()
@@ -114,6 +100,8 @@ bool readAtmospherData()
 
 bool sendAtmosphereData()
 {
+    connectToWiFi();
+
     HTTPClient http;
     String payload;
     DynamicJsonBuffer jsonBuffer(JSON_OBJECT_SIZE(3));
@@ -145,6 +133,30 @@ bool sendAtmosphereData()
     http.end();
 
     return true;
+}
+
+void connectToWiFi() {
+    //Start, configurare and connect to WiFi
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(500);
+        drawCenterText("Connecting...");
+    }
+
+    // Verbonden.
+    drawCenterText("Connected!");
+    Serial.println("Connected!");
+
+    // Access Point (SSID).
+    Serial.print("SSID: ");
+    Serial.println(WiFi.SSID());
+
+    // IP adres.
+    Serial.print("IP: ");
+    Serial.println(WiFi.localIP());
 }
 
 void drawCenterText(String text) {
