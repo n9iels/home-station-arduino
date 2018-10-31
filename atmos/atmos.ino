@@ -53,10 +53,9 @@ void loop()
     {
         drawCenterText("Faild to read DHT.");
         Serial.println("Faild to read DHT.");
-        return;
+    } else {
+        sendAtmosphereData();
     }
-
-    sendAtmosphereData();
 
     faildReads = 0;
 
