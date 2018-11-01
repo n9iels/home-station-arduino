@@ -2,7 +2,7 @@
 #include <ESP8266HTTPClient.h>
 
 // Defines
-#define HALLPIN 14 // D5
+#define HALLPIN 2 // D4 (also LED_BUILDIN)
 
 // Constants
 const char *ssid = "";
