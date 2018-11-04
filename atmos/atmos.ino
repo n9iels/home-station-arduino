@@ -17,6 +17,7 @@ Adafruit_SSD1306 display(OLED_RESET);
 // Constants
 const char* ssid = "";
 const char* password = "";
+const char* fingerprint = "19 6B 2D AA E4 3D 39 7D D7 70 E8 9B CE EE 2A 63 71 E0 0F E5";
 const int sleepTimeS = 600;
 
 // Global declarations
@@ -114,7 +115,7 @@ bool sendAtmosphereData()
     root.printTo(payload);
 
     // Build HTTP POST
-    http.begin("http://192.168.1.148:8080/api/weather/atmosphere");
+    http.begin("https://weer.nielsvanderveer.nl/api/weather/atmosphere", fingerprint);
     http.addHeader("Content-Type", "application/json");
     http.addHeader("User-Agent", "Wemos D1 Mini - Atmosphere");
 

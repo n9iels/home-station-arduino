@@ -8,6 +8,7 @@
 // Constants
 const char *ssid = "";
 const char *password = "";
+const char* fingerprint = "19 6B 2D AA E4 3D 39 7D D7 70 E8 9B CE EE 2A 63 71 E0 0F E5";
 
 // Global declarations
 unsigned long startTime;
@@ -24,11 +25,11 @@ void setup()
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
 
-    // while (WiFi.status() != WL_CONNECTED)
-    // {
-    //     delay(500);
-    //     Serial.print(".");
-    // }
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(500);
+        Serial.print(".");
+    }
 
     // Verbonden.
     Serial.println("Connected!");
@@ -100,7 +101,7 @@ bool sendWindData()
     root.printTo(payload);
 
     // Build HTTP POST
-    http.begin("http://weer.nielsvanderveer.nl:1686/api/weather/wind");
+    http.begin("https://weer.nielsvanderveer.nl/api/weather/wind", fingerprint);
     http.addHeader("Content-Type", "application/json");
     http.addHeader("User-Agent", "Wemos D1 Mini - Windmeter");
 
