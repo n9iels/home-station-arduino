@@ -7,8 +7,8 @@
 
 // Defines
 #define OLED_RESET 0 // D3
-#define DHTPIN 14 // D5
-#define DHTTYPE DHT11
+#define DHTPIN 13 // D7
+#define DHTTYPE DHT22
 
 // Inital setup
 DHT dht(DHTPIN, DHTTYPE);
