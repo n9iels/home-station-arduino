@@ -60,6 +60,9 @@ void loop()
 
     faildReads = 0;
 
+    // Display the temperature data agains and go to sleep
+    readAtmospherData();
+
     // Turn the ESP into sleep mode
     ESP.deepSleep(sleepTimeS * 1000000, WAKE_RF_DISABLED);
 }
