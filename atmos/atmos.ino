@@ -7,7 +7,7 @@
 
 // Defines
 #define OLED_RESET 0 // D3
-#define DHTPIN 13 // D7
+#define DHTPIN 13    // D7
 #define DHTTYPE DHT22
 
 // Inital setup
@@ -15,23 +15,22 @@ DHT dht(DHTPIN, DHTTYPE);
 Adafruit_SSD1306 display(OLED_RESET);
 
 // Constants
-const char* ssid = "";
-const char* password = "";
-const char* fingerprint = "19 6B 2D AA E4 3D 39 7D D7 70 E8 9B CE EE 2A 63 71 E0 0F E5";
+const char *ssid = "";
+const char *password = "";
+const char *fingerprint = "19 6B 2D AA E4 3D 39 7D D7 70 E8 9B CE EE 2A 63 71 E0 0F E5";
 const int sleepTimeS = 600;
 
 // Global declarations
 float humidity;
 float temperature;
 float heatIndex;
-int faildReads = 0;
 
 void setup()
 {
     Serial.begin(115200);
 
     // Disable WiFi at startup to save battery
-    WiFi.mode( WIFI_OFF );
+    WiFi.mode(WIFI_OFF);
     WiFi.forceSleepBegin();
     delay(1);
 
@@ -48,20 +47,35 @@ void setup()
 
 void loop()
 {
-    bool atmosphereRead = readAtmospherData();
+    bool atmosphereRead;
+
+    // Display the temperature data agains and go to sleep
+    for (int i = 0; i <= 3; i++)
+    {
+        atmosphereRead = readAtmospherData();
+
+        if (atmosphereRead)
+        {
+            continue;
+        }
+        else
+        {
+            delay(500);
+        }
+    }
 
     if (!atmosphereRead)
     {
         drawCenterText("Faild to read DHT.");
         Serial.println("Faild to read DHT.");
-    } else {
-        sendAtmosphereData();
     }
+    else
+    {
+        sendAtmosphereData();
 
-    faildReads = 0;
-
-    // Display the temperature data agains and go to sleep
-    readAtmospherData();
+        // Read again to display the latest data while in sleep mode
+        readAtmospherData();
+    }
 
     // Turn the ESP into sleep mode
     ESP.deepSleep(sleepTimeS * 1000000, WAKE_RF_DISABLED);
@@ -75,15 +89,7 @@ bool readAtmospherData()
     // Check if any reads failed and exit early
     if (isnan(humidity) || isnan(temperature))
     {
-        if (faildReads < 3) {
-            delay(1000);
-            faildReads = faildReads + 1;
-            return readAtmospherData();
-        }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     heatIndex = dht.computeHeatIndex(temperature, humidity, false);
@@ -95,8 +101,6 @@ bool readAtmospherData()
     display.println("Humidity     " + String(humidity) + "%");
     display.println("Heat index   " + String(heatIndex) + "C");
     display.display();
-
-    faildReads = 0;
 
     return true;
 }
@@ -122,6 +126,8 @@ bool sendAtmosphereData()
     http.addHeader("Content-Type", "application/json");
     http.addHeader("User-Agent", "Wemos D1 Mini - Atmosphere");
 
+    drawCenterText("Sending data");
+
     int httpCode = http.POST(payload);
 
     if (httpCode != 201)
@@ -138,7 +144,8 @@ bool sendAtmosphereData()
     return true;
 }
 
-void connectToWiFi() {
+void connectToWiFi()
+{
     //Start, configurare and connect to WiFi
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
@@ -162,7 +169,8 @@ void connectToWiFi() {
     Serial.println(WiFi.localIP());
 }
 
-void drawCenterText(String text) {
+void drawCenterText(String text)
+{
     display.clearDisplay();
     display.setCursor(0, display.height() / 2);
     display.print(text);
