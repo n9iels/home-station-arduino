@@ -13,7 +13,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_AMOUNT, LED_PIN, NEO_GRB + NEO_K
 // Constants
 const char *ssid = "";
 const char *password = "";
-const char *fingerprint = "19 6B 2D AA E4 3D 39 7D D7 70 E8 9B CE EE 2A 63 71 E0 0F E5";
+const char *fingerprint = "6728576b9bcfe220f1917c08f25413c51e371cb2";
 
 void setup()
 {
@@ -41,24 +41,13 @@ void loop()
 {
     float temperature = getTemperature();
 
-    if (temperature >= 30)
-    {
-        setStripColor(strip.Color(255, 0, 25));
-    }
-    else if (temperature < 30 && temperature >= 20)
-    {
-        setStripColor(strip.Color(13, 198, 100));
-    }
-    else if (temperature < 20 && temperature >= 5)
-    {
-        setStripColor(strip.Color(13, 155, 198));
-    }
-    else
-    {
-        setStripColor(strip.Color(255, 255, 255));
+    if (temperature > 25.00) {
+        setStripColor(strip.Color(255, 0, 0));
+    } else {
+        setStripColor(strip.Color(0, 255, 0));
     }
 
-    delay(60000);
+    delay(5000);
 }
 
 void setStripColor(uint32_t color)
@@ -77,21 +66,21 @@ void setStripColor(uint32_t color)
 float getTemperature()
 {
     HTTPClient http;
-    const size_t bufferSize = JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(7) + 220;
+    const size_t bufferSize = JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(6) + 140;
     DynamicJsonBuffer jsonBuffer(bufferSize);
 
-    http.begin("http://hro-sma.nl/api/weatherupdates/device/18bc764b-16ba-4c06-a498-5490061b864a/latest/1");
-    http.addHeader("X-Device-Id", "18bc764b-16ba-4c06-a498-5490061b864a");
+    http.begin("https://weer.nielsvanderveer.nl/api/weather/atmosphere/latest", fingerprint);
 
     int httpCode = http.GET();
     if (httpCode == 200)
     {
         String json = http.getString();
+        Serial.println(json);
 
         JsonArray &root = jsonBuffer.parseArray(json);
         JsonObject &root_0 = root[0];
 
-        return root_0["temperatureC"];
+        return root_0["heatindex"];
     }
     else
     {
