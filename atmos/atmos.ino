@@ -17,7 +17,7 @@ Adafruit_SSD1306 display(OLED_RESET);
 // Constants
 const char *ssid = "";
 const char *password = "";
-const char *fingerprint = "19 6B 2D AA E4 3D 39 7D D7 70 E8 9B CE EE 2A 63 71 E0 0F E5";
+const char *fingerprint = "6728576b9bcfe220f1917c08f25413c51e371cb2";
 const int sleepTimeS = 600;
 
 // Global declarations
